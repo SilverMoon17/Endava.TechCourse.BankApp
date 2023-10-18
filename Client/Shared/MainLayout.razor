@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+	<MudAppBar Elevation="0" Color="Color.Primary">
+		<h2>Endava Tech Course Bank App | </h2>
+		<MudButton Href="/" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Pagina Principala</MudButton>
+	</MudAppBar>
+
+	<MudMainContent>
+		<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-8">
+			@Body
+			<MudScrollToTop>
+				<MudFab Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.ArrowCircleUp" />
+			</MudScrollToTop>
+		</MudContainer>
+	</MudMainContent>
+</MudLayout>
+
+
+@code {
+	private MudTheme Theme = new MudTheme()
+	{
+		Palette = new PaletteLight()
+		{
+			Tertiary = Colors.DeepPurple.Darken4
+		},
+	};
+}
