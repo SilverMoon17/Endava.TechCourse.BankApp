@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Client\Endava.TechCourse.BankApp.Client.csproj" />
+    <ProjectReference Include="..\Endava.TechCourse.BankApp.Infrastructure\Endava.TechCourse.BankApp.Infrastructure.csproj" />
     <ProjectReference Include="..\Shared\Endava.TechCourse.BankApp.Shared.csproj" />
   </ItemGroup>
 
