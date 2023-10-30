@@ -15,9 +15,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Domain", "Endava.TechCourse.BankApp.Domain\Endava.TechCourse.BankApp.Domain.csproj", "{88837412-0E19-4395-B6B3-7DF6C33FF2B9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Infrastructure", "Endava.TechCourse.BankApp.Infrastructure\Endava.TechCourse.BankApp.Infrastructure.csproj", "{59A570FA-3951-4F80-BC11-C6D98D85206D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{88837412-0E19-4395-B6B3-7DF6C33FF2B9} = {88837412-0E19-4395-B6B3-7DF6C33FF2B9}
-	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endava.TechCourse.BankApp.Test", "Endava.TechCourse.BankApp.Test\Endava.TechCourse.BankApp.Test.csproj", "{2DA71FCD-908E-4445-BAE7-721675513E3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +44,10 @@ Global
 		{59A570FA-3951-4F80-BC11-C6D98D85206D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59A570FA-3951-4F80-BC11-C6D98D85206D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59A570FA-3951-4F80-BC11-C6D98D85206D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DA71FCD-908E-4445-BAE7-721675513E3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DA71FCD-908E-4445-BAE7-721675513E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DA71FCD-908E-4445-BAE7-721675513E3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DA71FCD-908E-4445-BAE7-721675513E3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
