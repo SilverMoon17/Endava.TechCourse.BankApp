@@ -1,0 +1,45 @@
+﻿<h3>Wallet</h3>
+@page "/wallets"
+@using MudBlazor
+@using System.Diagnostics
+@inject HttpClient HttpClient
+ 
+<PageTitle>All wallets</PageTitle>
+ 
+ 
+<br />
+<br />
+ 
+<MudTable Items="@wallets">
+	<HeaderContent>
+		<MudTh>Type</MudTh>
+		<MudTh>Amount</MudTh>
+		<MudTh>Currency</MudTh>
+		<MudTh>Info</MudTh>
+	</HeaderContent>
+	<RowTemplate>
+		<MudTd>@context.Type</MudTd>
+		<MudTd>@context.Amount</MudTd>
+		<MudTd>@context.Currency.CurrencyCode</MudTd>
+		<MudTd DataLabel="Info">
+			<MudLink Href="@($"/wallet/{@context.Id}")">View info</MudLink>
+		</MudTd>
+	</RowTemplate>
+</MudTable>
+<MudGrid Justify="Justify.FlexEnd" Class="mt-10">
+	<MudItem>
+		<MudLink Href="/createWallet"><MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Create" Color="Color.Success">Create new wallet</MudButton></MudLink>
+	</MudItem>
+</MudGrid>
+@code {
+	private List<Domain.Models.Wallet> wallets;
+ 
+	protected override async Task OnInitializedAsync()
+	{
+		wallets = await HttpClient.GetFromJsonAsync<List<Domain.Models.Wallet>>($"http://localhost:5216/api/wallet/getwallets");
+		foreach (var wallet in wallets)
+		{
+			Console.WriteLine(wallet.TimeStamp);
+		}
+	}
+}

@@ -1,0 +1,48 @@
+﻿@page "/createWallet"
+@using Endava.TechCourse.BankApp.Domain.Models
+@using Endava.TechCourse.BankApp.Shared
+@using System.Net
+
+
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<MudForm Model="@_newWallet">
+	<MudTextField Label="Type" @bind-Value="_newWallet.Type" />
+	<MudNumericField Label="Amount" @bind-Value="_newWallet.Amount" />
+	<MudSelect Label="CurrencyCode" @bind-Value="_newWallet.CurrencyCode">
+		@if (_currencies != null)
+		{
+			foreach (var currency in _currencies)
+			{
+				<MudSelectItem Value="@currency.CurrencyCode">@currency.CurrencyCode</MudSelectItem>
+			}
+		}
+	</MudSelect>
+
+	<MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Submit" Class="mt-7" OnClick="CreateNewWallet">Create Wallet</MudButton>
+</MudForm>
+
+@code {
+	private CreateWalletDTO _newWallet = new CreateWalletDTO();
+	private List<Currency>? _currencies = new List<Currency>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		_currencies = await HttpClient.GetFromJsonAsync<List<Domain.Models.Currency>>($"http://localhost:5216/api/currency/getAllCurrencies");
+	}
+
+	private async Task CreateNewWallet()
+	{
+		HttpResponseMessage response = await HttpClient.PostAsJsonAsync("http://localhost:5216/api/wallet", _newWallet);
+
+		if (response.StatusCode == HttpStatusCode.OK)
+		{
+			Snackbar.Add("Wallet added successfully!", Severity.Success);
+		}
+		else
+		{
+			Snackbar.Add("Something went wrong!", Severity.Error);
+		}
+	}
+}
