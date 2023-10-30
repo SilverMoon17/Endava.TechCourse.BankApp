@@ -2,9 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Endava.TechCourse.BankApp.Domain\Endava.TechCourse.BankApp.Domain.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />

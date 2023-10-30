@@ -12,9 +12,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Shared", "Shared\Endava.TechCourse.BankApp.Shared.csproj", "{28E63B00-FB6A-4FB0-93DD-02DF5E3FF1B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endava.TechCourse.BankApp.Domain", "Endava.TechCourse.BankApp.Domain\Endava.TechCourse.BankApp.Domain.csproj", "{88837412-0E19-4395-B6B3-7DF6C33FF2B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Domain", "Endava.TechCourse.BankApp.Domain\Endava.TechCourse.BankApp.Domain.csproj", "{88837412-0E19-4395-B6B3-7DF6C33FF2B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endava.TechCourse.BankApp.Infrastructure", "Endava.TechCourse.BankApp.Infrastructure\Endava.TechCourse.BankApp.Infrastructure.csproj", "{59A570FA-3951-4F80-BC11-C6D98D85206D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Infrastructure", "Endava.TechCourse.BankApp.Infrastructure\Endava.TechCourse.BankApp.Infrastructure.csproj", "{59A570FA-3951-4F80-BC11-C6D98D85206D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{88837412-0E19-4395-B6B3-7DF6C33FF2B9} = {88837412-0E19-4395-B6B3-7DF6C33FF2B9}
 	EndProjectSection
