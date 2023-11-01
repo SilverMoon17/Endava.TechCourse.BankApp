@@ -14,14 +14,32 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 		public WalletController(ApplicationDbContext dbContext)
 		{
+			ArgumentNullException.ThrowIfNull(dbContext);
 			_context = dbContext;
 		}
 
 		[HttpGet]
 		[Route("getWallets")]
-		public async Task<List<Wallet>> GetWallets()
+		public async Task<List<WalletDTO>> GetWallets()
 		{
-			return await _context.Wallets.Include(w => w.Currency).ToListAsync();
+			var wallets = await _context.Wallets.Include(w => w.Currency).ToListAsync();
+
+			var dtos = new List<WalletDTO>();
+
+			foreach (var wallet in wallets)
+			{
+				var dto = new WalletDTO()
+				{
+					Id = wallet.Id.ToString(),
+					Currency = wallet.Currency.CurrencyCode,
+					Type = wallet.Type,
+					Amount = wallet.Amount
+				};
+
+				dtos.Add(dto);
+			}
+
+			return dtos;
 		}
 
 		[HttpGet("{id}")]
