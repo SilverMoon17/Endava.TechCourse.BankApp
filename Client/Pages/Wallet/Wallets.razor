@@ -1,5 +1,6 @@
 ﻿<h3>Wallet</h3>
 @page "/wallets"
+@using Endava.TechCourse.BankApp.Shared
 @inject HttpClient HttpClient
  
 <PageTitle>All wallets</PageTitle>
@@ -30,10 +31,10 @@
 	</MudItem>
 </MudGrid>
 @code {
-	private List<WalletDTO> wallets;
+	private List<WalletDto> wallets;
  
 	protected override async Task OnInitializedAsync()
 	{
-		wallets = await HttpClient.GetFromJsonAsync<List<WalletDTO>>($"api/wallet/getwallets");
+		wallets = await HttpClient.GetFromJsonAsync<List<WalletDto>>($"api/wallet/getwallets");
 	}
 }

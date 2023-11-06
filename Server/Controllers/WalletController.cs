@@ -1,6 +1,9 @@
-﻿using Endava.TechCourse.BankApp.Domain.Models;
+﻿using Endava.TechCourse.BankApp.Application.Commands.CreateWallet;
+using Endava.TechCourse.BankApp.Application.Queries.GetWallets;
+using Endava.TechCourse.BankApp.Domain.Models;
 using Endava.TechCourse.BankApp.Infrastructure.Persistence;
 using Endava.TechCourse.BankApp.Shared;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,24 +14,29 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 	public class WalletController : ControllerBase
 	{
 		private readonly ApplicationDbContext _context;
+		private readonly IMediator _mediator;
 
-		public WalletController(ApplicationDbContext dbContext)
+		public WalletController(ApplicationDbContext dbContext, IMediator mediator)
 		{
 			ArgumentNullException.ThrowIfNull(dbContext);
+			ArgumentNullException.ThrowIfNull(mediator);
 			_context = dbContext;
+			_mediator = mediator;
 		}
 
 		[HttpGet]
 		[Route("getWallets")]
-		public async Task<List<WalletDTO>> GetWallets()
+		public async Task<List<WalletDto>> GetWallets()
 		{
-			var wallets = await _context.Wallets.Include(w => w.Currency).ToListAsync();
+			var query = new GetWalletsQuery();
 
-			var dtos = new List<WalletDTO>();
+			var wallets = await _mediator.Send(query);
+
+			var dtos = new List<WalletDto>();
 
 			foreach (var wallet in wallets)
 			{
-				var dto = new WalletDTO()
+				var dto = new WalletDto()
 				{
 					Id = wallet.Id.ToString(),
 					Currency = wallet.Currency.CurrencyCode,
@@ -51,16 +59,14 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		[HttpPost]
 		public IActionResult CreateWallet([FromBody] CreateWalletDTO createWalletDto)
 		{
-			var currency = _context.Currencies.FirstOrDefault(c => c.CurrencyCode == createWalletDto.CurrencyCode);
-			var wallet = new Wallet
+			var command = new CreateWalletCommand()
 			{
 				Type = createWalletDto.Type,
 				Amount = createWalletDto.Amount,
-				Currency = currency
+				CurrencyCode = createWalletDto.CurrencyCode,
 			};
 
-			_context.Wallets.Add(wallet);
-			_context.SaveChanges();
+			_mediator.Send(command);
 
 			return Ok();
 		}
