@@ -1,5 +1,4 @@
 ﻿@page "/createWallet"
-@using Endava.TechCourse.BankApp.Domain.Models
 @using Endava.TechCourse.BankApp.Shared
 @using System.Net
 
@@ -25,11 +24,11 @@
 
 @code {
 	private CreateWalletDTO _newWallet = new CreateWalletDTO();
-	private List<Currency>? _currencies = new List<Currency>();
+	private List<CurrencyDto> _currencies = new List<CurrencyDto>();
 
 	protected override async Task OnInitializedAsync()
 	{
-		_currencies = await HttpClient.GetFromJsonAsync<List<Domain.Models.Currency>>($"http://localhost:5216/api/currency/getAllCurrencies");
+		_currencies = await HttpClient.GetFromJsonAsync<List<CurrencyDto>>($"http://localhost:5216/api/currency/getAllCurrencies");
 	}
 
 	private async Task CreateNewWallet()

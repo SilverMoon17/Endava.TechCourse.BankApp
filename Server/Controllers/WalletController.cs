@@ -1,11 +1,11 @@
 ﻿using Endava.TechCourse.BankApp.Application.Commands.CreateWallet;
+using Endava.TechCourse.BankApp.Application.Commands.DeleteWallet;
+using Endava.TechCourse.BankApp.Application.Queries.GetWalletById;
 using Endava.TechCourse.BankApp.Application.Queries.GetWallets;
-using Endava.TechCourse.BankApp.Domain.Models;
 using Endava.TechCourse.BankApp.Infrastructure.Persistence;
 using Endava.TechCourse.BankApp.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Endava.TechCourse.BankApp.Server.Controllers
 {
@@ -51,9 +51,24 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		}
 
 		[HttpGet("{id}")]
-		public async Task<Wallet?> GetWalletById(Guid id)
+		public async Task<WalletDto> GetWalletById(Guid id)
 		{
-			return await _context.Wallets.Include(w => w.Currency).FirstOrDefaultAsync(w => w.Id == id);
+			var query = new GetWalletByIdQuery()
+			{
+				Id = id
+			};
+
+			var wallet = await _mediator.Send(query);
+
+			var dto = new WalletDto()
+			{
+				Amount = wallet.Amount,
+				Currency = wallet.Currency.CurrencyCode,
+				Type = wallet.Type,
+				Id = wallet.Id.ToString()
+			};
+
+			return dto;
 		}
 
 		[HttpPost]
@@ -69,6 +84,18 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 			_mediator.Send(command);
 
 			return Ok();
+		}
+
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteCurrency(Guid id)
+		{
+			var command = new DeleteWalletCommand()
+			{
+				Id = id
+			};
+			var result = await _mediator.Send(command);
+
+			return result.IsSuccessful ? Ok(result) : BadRequest(result.Error);
 		}
 	}
 }

@@ -16,9 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Infrastructure", "Endava.TechCourse.BankApp.Infrastructure\Endava.TechCourse.BankApp.Infrastructure.csproj", "{59A570FA-3951-4F80-BC11-C6D98D85206D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endava.TechCourse.BankApp.Test", "Endava.TechCourse.BankApp.Test\Endava.TechCourse.BankApp.Test.csproj", "{2DA71FCD-908E-4445-BAE7-721675513E3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Test", "Endava.TechCourse.BankApp.Test\Endava.TechCourse.BankApp.Test.csproj", "{2DA71FCD-908E-4445-BAE7-721675513E3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endava.TechCourse.BankApp.Application", "Endava.TechCourse.BankApp.Application\Endava.TechCourse.BankApp.Application.csproj", "{37912DCC-ED86-48AC-BFFD-4EA6610B1627}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endava.TechCourse.BankApp.Application", "Endava.TechCourse.BankApp.Application\Endava.TechCourse.BankApp.Application.csproj", "{37912DCC-ED86-48AC-BFFD-4EA6610B1627}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
