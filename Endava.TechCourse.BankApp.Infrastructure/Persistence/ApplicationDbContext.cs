@@ -1,9 +1,11 @@
 ﻿using Endava.TechCourse.BankApp.Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Endava.TechCourse.BankApp.Infrastructure.Persistence
 {
-	public class ApplicationDbContext : DbContext
+	public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 	{
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
 		{
@@ -16,6 +18,12 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Persistence
 		{
 			modelBuilder.Entity<Wallet>().HasKey(w => w.Id);
 			modelBuilder.Entity<Currency>().HasKey(c => c.Id);
+
+			modelBuilder.Entity<Currency>()
+				.HasMany(c => c.Wallets)
+				.WithOne(e => e.Currency)
+				.HasForeignKey(c => c.CurrencyId)
+				.IsRequired();
 
 			base.OnModelCreating(modelBuilder);
 		}
