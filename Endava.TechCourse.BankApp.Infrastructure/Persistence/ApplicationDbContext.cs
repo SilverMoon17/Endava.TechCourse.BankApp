@@ -1,4 +1,5 @@
 ﻿using Endava.TechCourse.BankApp.Domain.Models;
+using Endava.TechCourse.BankApp.Infrastructure.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Persistence
 				.WithOne(e => e.Currency)
 				.HasForeignKey(c => c.CurrencyId)
 				.IsRequired();
+			modelBuilder.ApplyConfiguration(new RoleConfigurations());
 
 			base.OnModelCreating(modelBuilder);
 		}
