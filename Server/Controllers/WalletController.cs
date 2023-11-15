@@ -3,8 +3,10 @@ using Endava.TechCourse.BankApp.Application.Commands.DeleteWallet;
 using Endava.TechCourse.BankApp.Application.Queries.GetWalletById;
 using Endava.TechCourse.BankApp.Application.Queries.GetWallets;
 using Endava.TechCourse.BankApp.Infrastructure.Persistence;
+using Endava.TechCourse.BankApp.Server.Common;
 using Endava.TechCourse.BankApp.Shared;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Endava.TechCourse.BankApp.Server.Controllers
@@ -26,8 +28,41 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 		[HttpGet]
 		[Route("getWallets")]
+		[Authorize(Roles = "User")]
 		public async Task<List<WalletDto>> GetWallets()
 		{
+			var query = new GetWalletsQuery();
+
+			var wallets = await _mediator.Send(query);
+
+			var dtos = new List<WalletDto>();
+
+			foreach (var wallet in wallets)
+			{
+				var dto = new WalletDto()
+				{
+					Id = wallet.Id.ToString(),
+					Currency = wallet.Currency.CurrencyCode,
+					Type = wallet.Type,
+					Amount = wallet.Amount
+				};
+
+				dtos.Add(dto);
+			}
+
+			return dtos;
+		}
+
+		[HttpGet]
+		[Route("getWallets")]
+		[Authorize(Roles = "User")]
+		public async Task<List<WalletDto>> GetWalletsForUser()
+		{
+			var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserIdClaimName)?.Value;
+
+			if (userIdClaim is null)
+				return new List<WalletDto>();
+
 			var query = new GetWalletsQuery();
 
 			var wallets = await _mediator.Send(query);

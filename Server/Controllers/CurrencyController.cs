@@ -4,6 +4,7 @@ using Endava.TechCourse.BankApp.Application.Queries.GetCurrencies;
 using Endava.TechCourse.BankApp.Application.Queries.GetCurrencyById;
 using Endava.TechCourse.BankApp.Shared;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Endava.TechCourse.BankApp.Server.Controllers
@@ -21,6 +22,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> AddCurrency([FromBody] CurrencyDto currencyDTO)
 		{
 			var command = new AddCurrencyCommand()
@@ -82,6 +84,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		}
 
 		[HttpDelete("{id}")]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> DeleteCurrency(Guid id)
 		{
 			var command = new DeleteCurrencyCommand()
