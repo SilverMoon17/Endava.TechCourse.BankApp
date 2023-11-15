@@ -10,7 +10,7 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Configurations
 		public void Configure(EntityTypeBuilder<IdentityRole<Guid>> builder)
 		{
 			var roles = Enum.GetNames(typeof(UserRole))
-				.Select(role => new IdentityRole<Guid>() { Id = Guid.NewGuid(), Name = role, NormalizedName = role.ToUpper() })
+				.Select(role => new IdentityRole<Guid>() { Id = Guid.NewGuid(), Name = role, NormalizedName = role.Normalize() })
 				.ToList();
 
 			builder.HasData(roles);

@@ -3,6 +3,9 @@
 
 @inject HttpClient httpClient
 
+@inject NavigationManager navigationManager
+@inject AuthService authService
+
 <PageTitle>Endava .NET Tech Course</PageTitle>
 
 <MudGrid Class="justify-md-center">
@@ -32,6 +35,14 @@
 
 @code {
 	RegisterDto newUser = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var isAuthenticated = await authService.IsUserauthenticated();
+
+		if (isAuthenticated)
+			navigationManager.NavigateTo("");
+	}
 
 	public async Task RegisterNewUser()
 	{

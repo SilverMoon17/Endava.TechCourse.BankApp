@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject AuthService authService
 
 <MudThemeProvider Theme="Theme" />
 <MudDialogProvider />
@@ -8,12 +9,27 @@
 	<MudAppBar Elevation="0" Color="Color.Primary">
 		<h2>Endava University Bank App | </h2>
 		<MudButton Href="/" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Pagina Principala</MudButton>
-		<MudButton Href="/user-panel" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Panou utilizator</MudButton>
-		<MudButton Href="/admin-panel" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Panou administrator</MudButton>
-
-		<MudSpacer />
-		<MudButton Href="/login" Variant="Variant.Filled" DisableElevation="true" Color="Color.Tertiary" Class="mr-4">Autentificare</MudButton>
-		<MudButton Href="/register" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Inregistrare</MudButton>
+		<AuthorizeView Roles="User">
+			<Authorized>
+				<MudButton Href="/user-panel" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Panou utilizator</MudButton>
+			</Authorized>
+		</AuthorizeView>
+		<AuthorizeView Roles="Admin">
+			<Authorized>
+				<MudButton Href="/admin-panel" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Panou administrator</MudButton>
+			</Authorized>
+		</AuthorizeView>
+		<AuthorizeView>
+			<Authorized>
+				<MudSpacer />
+				<MudButton Href="/" Variant="Variant.Filled" OnClick="Logout" DisableElevation="true" Color="Color.Tertiary" Class="mr-4">log Out</MudButton>
+			</Authorized>
+			<NotAuthorized>
+				<MudSpacer />
+				<MudButton Href="/login" Variant="Variant.Filled" DisableElevation="true" Color="Color.Tertiary" Class="mr-4">Autentificare</MudButton>
+				<MudButton Href="/register" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Inregistrare</MudButton>
+			</NotAuthorized>
+		</AuthorizeView>
 	</MudAppBar>
 
 	<MudMainContent>
@@ -35,4 +51,6 @@
 			Tertiary = Colors.DeepPurple.Darken4
 		},
 	};
+
+	private async Task Logout() => await authService.Logout();
 }
