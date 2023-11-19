@@ -1,6 +1,6 @@
 ﻿<h3>Wallet</h3>
 @page "/wallets"
-@using Endava.TechCourse.BankApp.Shared
+@layout PanelLayout
 @inject HttpClient HttpClient
  
 <PageTitle>All wallets</PageTitle>
@@ -23,6 +23,9 @@
 		<MudTd DataLabel="Info">
 			<MudLink Href="@($"/wallet/{@context.Id}")">View info</MudLink>
 		</MudTd>
+		<MudTd DataLabel="Nr">
+			<MudButton Color="Color.Error" OnClick="@((e) => DeleteWallet(context.Id))">Sterge</MudButton>
+		</MudTd>
 	</RowTemplate>
 </MudTable>
 <MudGrid Justify="Justify.FlexEnd" Class="mt-10">
@@ -32,9 +35,19 @@
 </MudGrid>
 @code {
 	private List<WalletDto> wallets;
+
+	private string newCurrencyError = string.Empty;
+	private string deleteCurrencyError = string.Empty;
  
 	protected override async Task OnInitializedAsync()
 	{
-		wallets = await HttpClient.GetFromJsonAsync<List<WalletDto>>($"api/wallet/getwallets");
+		wallets = await HttpClient.GetFromJsonAsync<List<WalletDto>>($"api/wallet/getWalletsForUser");
+	}
+
+	public async Task DeleteWallet(string id)
+	{
+		await HttpClient.DeleteAsync($"api/Wallet/{id}");
+
+		StateHasChanged();
 	}
 }

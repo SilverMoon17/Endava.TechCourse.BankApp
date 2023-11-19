@@ -1,5 +1,6 @@
 ﻿@page "/currencies"
-@layout AdminLayout
+@using Microsoft.AspNetCore.Components
+@layout PanelLayout
 @inject HttpClient httpClient
 
 <MudGrid>
@@ -122,15 +123,8 @@
 
     public async Task DeleteCurrency(string id)
     {
-        var result = await this.httpClient.PostAsJsonAsync("api/currencies/delete", id);
+	    var result = await httpClient.DeleteAsync($"api/currencies/{id}");
 
-        if (result.IsSuccessStatusCode){
-            await GetCurrencies();
-            deleteCurrencyError = string.Empty;
-        }
-        else
-            deleteCurrencyError = await result.Content.ReadAsStringAsync();
-
-        StateHasChanged();
+	    StateHasChanged();
     }
 }

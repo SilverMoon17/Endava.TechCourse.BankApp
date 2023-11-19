@@ -63,7 +63,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 			var userDetails = await _mediator.Send(userDetailsQuery);
 
-			string jwtToken = _jwtService.CreateAuthToken(userDetails.Id, userDetails.Username, userDetails.Roles);
+			var jwtToken = _jwtService.CreateAuthToken(userDetails.Id, userDetails.Username, userDetails.Roles);
 
 			Response.Cookies.Append(Constants.TokenCookieName, jwtToken, new CookieOptions()
 			{

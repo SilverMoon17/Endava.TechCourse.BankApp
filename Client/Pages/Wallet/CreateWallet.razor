@@ -2,9 +2,10 @@
 @using Endava.TechCourse.BankApp.Shared
 @using System.Net
 
-
+@layout PanelLayout
 @inject ISnackbar Snackbar
 @inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
 
 <MudForm Model="@_newWallet">
 	<MudTextField Label="Type" @bind-Value="_newWallet.Type" />
@@ -28,16 +29,18 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		_currencies = await HttpClient.GetFromJsonAsync<List<CurrencyDto>>($"http://localhost:5216/api/currency/getAllCurrencies");
+		_currencies = await HttpClient.GetFromJsonAsync<List<CurrencyDto>>($"api/currencies");
 	}
 
 	private async Task CreateNewWallet()
 	{
-		HttpResponseMessage response = await HttpClient.PostAsJsonAsync("http://localhost:5216/api/wallet", _newWallet);
+		HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/wallet", _newWallet);
 
 		if (response.StatusCode == HttpStatusCode.OK)
 		{
 			Snackbar.Add("Wallet added successfully!", Severity.Success);
+
+			NavigationManager.NavigateTo("/wallets");
 		}
 		else
 		{
