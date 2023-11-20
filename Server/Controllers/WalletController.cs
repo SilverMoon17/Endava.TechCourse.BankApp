@@ -2,6 +2,7 @@
 using Endava.TechCourse.BankApp.Application.Commands.DeleteWallet;
 using Endava.TechCourse.BankApp.Application.Queries.GetWalletById;
 using Endava.TechCourse.BankApp.Application.Queries.GetWallets;
+using Endava.TechCourse.BankApp.Application.Queries.GetWalletsByUserId;
 using Endava.TechCourse.BankApp.Infrastructure.Persistence;
 using Endava.TechCourse.BankApp.Server.Common;
 using Endava.TechCourse.BankApp.Shared;
@@ -28,7 +29,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 		[HttpGet]
 		[Route("getWallets")]
-		[Authorize(Roles = "User")]
+		[Authorize(Roles = "User,Admin")]
 		public async Task<List<WalletDto>> GetWallets()
 		{
 			var query = new GetWalletsQuery();
@@ -41,6 +42,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 			{
 				var dto = new WalletDto()
 				{
+					OwnerId = wallet.OwnerId.ToString(),
 					Id = wallet.Id.ToString(),
 					Currency = wallet.Currency.CurrencyCode,
 					Type = wallet.Type,
@@ -54,8 +56,8 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		}
 
 		[HttpGet]
-		[Route("getWallets")]
-		[Authorize(Roles = "User")]
+		[Route("getWalletsForUser")]
+		[Authorize]
 		public async Task<List<WalletDto>> GetWalletsForUser()
 		{
 			var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserIdClaimName)?.Value;
@@ -63,7 +65,10 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 			if (userIdClaim is null)
 				return new List<WalletDto>();
 
-			var query = new GetWalletsQuery();
+			var query = new GetWalletsByUserIdQuery()
+			{
+				OwnerId = userIdClaim
+			};
 
 			var wallets = await _mediator.Send(query);
 
@@ -107,22 +112,26 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult CreateWallet([FromBody] CreateWalletDTO createWalletDto)
+		[Authorize(Roles = "User,Admin")]
+		public async Task<IActionResult> CreateWallet([FromBody] CreateWalletDTO createWalletDto)
 		{
+			var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserIdClaimName)?.Value;
+
 			var command = new CreateWalletCommand()
 			{
+				OwnerId = userIdClaim,
 				Type = createWalletDto.Type,
 				Amount = createWalletDto.Amount,
 				CurrencyCode = createWalletDto.CurrencyCode,
 			};
 
-			_mediator.Send(command);
+			var result = await _mediator.Send(command);
 
-			return Ok();
+			return result.IsSuccessful ? Ok(result) : BadRequest(result.Error);
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteCurrency(Guid id)
+		public async Task<IActionResult> DeleteWallet(Guid id)
 		{
 			var command = new DeleteWalletCommand()
 			{

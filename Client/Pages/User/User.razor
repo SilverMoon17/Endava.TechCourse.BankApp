@@ -1,0 +1,19 @@
+﻿@page "/user-panel"
+@layout PanelLayout
+@inject HttpClient httpClient;
+
+<PageTitle>User Panel</PageTitle>
+
+<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+	<BaseNavMenu />
+</MudDrawer>
+
+@code {
+	bool _drawerOpen = true;
+	private MudTheme Theme = new MudTheme();
+
+	void DrawerToggle()
+	{
+		_drawerOpen = !_drawerOpen;
+	}
+}

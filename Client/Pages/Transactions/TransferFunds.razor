@@ -1,0 +1,56 @@
+﻿@page "/transfer-funds"
+@layout PanelLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<MudForm Model="@_transferFundsModel">
+	<MudSelect Label="Sender Wallet" @bind-Value="_transferFundsModel.SenderWalletId">
+		@if (_userWallets != null)
+		{
+			foreach (var wallet in _userWallets)
+			{
+				<MudSelectItem Value="@wallet.Id">@wallet.Type</MudSelectItem>
+			}
+		}
+	</MudSelect>
+
+	<MudTextField Label="Receiver Username" @bind-Value="_transferFundsModel.ReceiverUsername" />
+
+	<MudNumericField Label="Amount" @bind-Value="_transferFundsModel.Amount" />
+
+	<MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Submit" Class="mt-7" OnClick="MakeTransferFunds">Transfer Funds</MudButton>
+</MudForm>
+
+@code {
+	private TransferFundsModel _transferFundsModel = new TransferFundsModel();
+	private List<WalletDto> _userWallets;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_userWallets = await HttpClient.GetFromJsonAsync<List<WalletDto>>("api/wallet/getWalletsForUser");
+	}
+
+	private async Task MakeTransferFunds()
+	{
+		var response = await HttpClient.PostAsJsonAsync("api/transaction", _transferFundsModel);
+
+		if (response.IsSuccessStatusCode)
+		{
+			Snackbar.Add("Funds transferred successfully!", Severity.Success);
+			NavigationManager.NavigateTo("/transactions");
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Snackbar.Add(errorMessage, Severity.Error);
+		}
+	}
+
+	public class TransferFundsModel
+	{
+		public decimal Amount { get; set; }
+		public string ReceiverUsername { get; set; }
+		public string SenderWalletId { get; set; }
+	}
+}

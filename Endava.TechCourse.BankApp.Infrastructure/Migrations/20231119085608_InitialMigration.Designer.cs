@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231107085405_AddIdentity")]
-    partial class AddIdentity
+    [Migration("20231119085608_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,6 +43,42 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
+                });
+
+            modelBuilder.Entity("Endava.TechCourse.BankApp.Domain.Models.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("AmountInReceiverCurrency")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("ReceiverCurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReceiverUsername")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ReceiverWalletId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SenderCurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SenderUsername")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SenderWalletId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverCurrencyId");
+
+                    b.HasIndex("SenderCurrencyId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Endava.TechCourse.BankApp.Domain.Models.User", b =>
@@ -129,6 +165,9 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                     b.Property<Guid>("CurrencyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
@@ -165,6 +204,20 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e5484111-d12c-4080-a37e-2f5d5ffce724"),
+                            Name = "User",
+                            NormalizedName = "User"
+                        },
+                        new
+                        {
+                            Id = new Guid("dbbf4241-5dbd-4dbc-bfc4-5741fd52bf90"),
+                            Name = "Admin",
+                            NormalizedName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -268,6 +321,21 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Endava.TechCourse.BankApp.Domain.Models.Transaction", b =>
+                {
+                    b.HasOne("Endava.TechCourse.BankApp.Domain.Models.Currency", "ReceiverCurrency")
+                        .WithMany()
+                        .HasForeignKey("ReceiverCurrencyId");
+
+                    b.HasOne("Endava.TechCourse.BankApp.Domain.Models.Currency", "SenderCurrency")
+                        .WithMany()
+                        .HasForeignKey("SenderCurrencyId");
+
+                    b.Navigation("ReceiverCurrency");
+
+                    b.Navigation("SenderCurrency");
                 });
 
             modelBuilder.Entity("Endava.TechCourse.BankApp.Domain.Models.Wallet", b =>

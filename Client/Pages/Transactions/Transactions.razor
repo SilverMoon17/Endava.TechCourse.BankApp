@@ -1,0 +1,81 @@
+﻿@page "/transactions"
+@layout PanelLayout
+@inject HttpClient HttpClient
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="false" PanelClass="pa-6">
+	<MudTabPanel>
+		<ChildContent>
+			@if (receivedTransactionDtos == null || receivedTransactionDtos.Count == 0)
+			{
+				<MudText Align="Align.Center" Typo="Typo.h3">No received transactions</MudText>
+			}
+			else
+			{
+				<MudTable Items="@receivedTransactionDtos">
+					<HeaderContent>
+						<MudTh>ID</MudTh>
+						<MudTh>Sender Username</MudTh>
+						<MudTh>Sender Currency</MudTh>
+						<MudTh>Receiver Username</MudTh>
+						<MudTh>Receiver Currency</MudTh>
+						<MudTh>Amount In Receiver Currency</MudTh>
+					</HeaderContent>
+					<RowTemplate>
+						<MudTd>@context.Id</MudTd>
+						<MudTd>@context.SenderUsername</MudTd>
+						<MudTd>@context.SenderCurrencyCode</MudTd>
+						<MudTd>@context.ReceiverUsername</MudTd>
+						<MudTd>@context.ReceiverCurrencyCode</MudTd>
+						<MudTd>@context.Amount</MudTd>
+					</RowTemplate>
+				</MudTable>
+			}
+		</ChildContent>
+		<TabContent>
+			Received Transactions
+		</TabContent>
+	</MudTabPanel>
+	<MudTabPanel>
+		<ChildContent>
+			@if (sendTransactionDtos == null || sendTransactionDtos.Count == 0)
+			{
+				<MudText Align="Align.Center" Typo="Typo.h3">No send transactions</MudText>
+			}
+			else
+			{
+				<MudTable Items="@sendTransactionDtos">
+					<HeaderContent>
+						<MudTh>ID</MudTh>
+						<MudTh>Sender Username</MudTh>
+						<MudTh>Sender Currency</MudTh>
+						<MudTh>Receiver Username</MudTh>
+						<MudTh>Receiver Currency</MudTh>
+						<MudTh>Amount In Receiver Currency</MudTh>
+					</HeaderContent>
+					<RowTemplate>
+						<MudTd>@context.Id</MudTd>
+						<MudTd>@context.SenderUsername</MudTd>
+						<MudTd>@context.SenderCurrencyCode</MudTd>
+						<MudTd>@context.ReceiverUsername</MudTd>
+						<MudTd>@context.ReceiverCurrencyCode</MudTd>
+						<MudTd>@context.Amount</MudTd>
+					</RowTemplate>
+				</MudTable>
+			}
+		</ChildContent>
+		<TabContent>
+			Send Transactions
+		</TabContent>
+	</MudTabPanel>
+</MudTabs>
+
+@code {
+	private List<TransactionDto> receivedTransactionDtos;
+	private List<TransactionDto> sendTransactionDtos;
+
+	protected override async Task OnInitializedAsync()
+	{
+		receivedTransactionDtos = await HttpClient.GetFromJsonAsync<List<TransactionDto>>($"api/transaction/allReceivedTransactions");
+		sendTransactionDtos = await HttpClient.GetFromJsonAsync<List<TransactionDto>>($"api/transaction/allSendTransactions");
+	}
+}

@@ -4,6 +4,7 @@ namespace Endava.TechCourse.BankApp.Domain.Models
 {
 	public class Wallet : BaseEntity
 	{
+		public Guid OwnerId { get; set; }
 		public string Type { get; set; }
 		public decimal Amount { get; set; }
 		public Guid CurrencyId { get; set; }

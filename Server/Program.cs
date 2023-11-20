@@ -41,6 +41,7 @@ namespace Endava.TechCourse.BankApp
 			app.UseStaticFiles();
 
 			app.UseRouting();
+			app.UseAuthorization();
 
 			app.MapRazorPages();
 			app.MapControllers();
