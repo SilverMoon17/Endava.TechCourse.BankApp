@@ -12,12 +12,13 @@ namespace Endava.TechCourse.BankApp.Application.Queries.GetCurrencies
 		public GetCurrenciesHandler(ApplicationDbContext context)
 		{
 			ArgumentNullException.ThrowIfNull(context);
+
 			_context = context;
 		}
 
 		public async Task<List<Currency>> Handle(GetCurrenciesQuery request, CancellationToken cancellationToken)
 		{
-			return await _context.Currencies.AsNoTracking().ToListAsync();
+			return await _context.Currencies.AsNoTracking().ToListAsync(cancellationToken);
 		}
 	}
 }

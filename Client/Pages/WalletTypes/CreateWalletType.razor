@@ -1,0 +1,35 @@
+﻿@page "/create-wallet-type"
+@using Endava.TechCourse.BankApp.Shared
+@using System.Net
+
+@layout PanelLayout
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<MudForm Model="@_newWalletType">
+	<MudTextField Label="Wallet Type Name" @bind-Value="_newWalletType.WalletTypeName" />
+	<MudNumericField Label="Commission in %" @bind-Value="_newWalletType.Commission" />
+
+	<MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Submit" Class="mt-7" OnClick="CreateNewWalletType">Add new wallet type</MudButton>
+</MudForm>
+
+@code {
+	private CreateWalletTypeDto _newWalletType = new CreateWalletTypeDto();
+
+	private async Task CreateNewWalletType()
+	{
+		HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/walletTypeController/createWalletType", _newWalletType);
+
+		if (response.StatusCode == HttpStatusCode.OK)
+		{
+			Snackbar.Add("Wallet added successfully!", Severity.Success);
+
+			NavigationManager.NavigateTo("/wallet-types");
+		}
+		else
+		{
+			Snackbar.Add("Something went wrong!", Severity.Error);
+		}
+	}
+}

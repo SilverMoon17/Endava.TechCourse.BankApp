@@ -1,9 +1,11 @@
 ﻿namespace Endava.TechCourse.BankApp.Shared
 {
-	public class CreateWalletDTO
+	public class CreateWalletDto
 	{
-		public string Type { get; set; }
+		public string WalletTypeName { get; set; }
+		public string WalletName { get; set; }
 		public decimal Amount { get; set; }
 		public string CurrencyCode { get; set; }
+		public bool IsMain { get; set; }
 	}
 }

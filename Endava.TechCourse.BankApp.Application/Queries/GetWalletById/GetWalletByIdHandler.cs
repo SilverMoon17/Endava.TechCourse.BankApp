@@ -12,6 +12,7 @@ namespace Endava.TechCourse.BankApp.Application.Queries.GetWalletById
 		public GetWalletByIdHandler(ApplicationDbContext context)
 		{
 			ArgumentNullException.ThrowIfNull(context);
+
 			_context = context;
 		}
 

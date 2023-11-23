@@ -11,6 +11,8 @@ namespace Endava.TechCourse.BankApp.Application.Commands.AddCurrency
 
 		public AddCurrencyHandler(ApplicationDbContext context)
 		{
+			ArgumentNullException.ThrowIfNull(context);
+
 			_context = context;
 		}
 
@@ -34,9 +36,10 @@ namespace Endava.TechCourse.BankApp.Application.Commands.AddCurrency
 			};
 
 			await _context.Currencies.AddAsync(currency, cancellationToken);
+
 			await _context.SaveChangesAsync(cancellationToken);
 
-			return new CommandStatus();
+			return new();
 		}
 	}
 }

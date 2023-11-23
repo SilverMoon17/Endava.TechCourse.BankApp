@@ -1,5 +1,6 @@
 ﻿using Endava.TechCourse.BankApp.Application.Commands.CreateWallet;
 using Endava.TechCourse.BankApp.Application.Commands.DeleteWallet;
+using Endava.TechCourse.BankApp.Application.Commands.UpdateWalletIsFavorite;
 using Endava.TechCourse.BankApp.Application.Queries.GetWalletById;
 using Endava.TechCourse.BankApp.Application.Queries.GetWallets;
 using Endava.TechCourse.BankApp.Application.Queries.GetWalletsByUserId;
@@ -16,49 +17,31 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 	[ApiController]
 	public class WalletController : ControllerBase
 	{
-		private readonly ApplicationDbContext _context;
 		private readonly IMediator _mediator;
 
 		public WalletController(ApplicationDbContext dbContext, IMediator mediator)
 		{
-			ArgumentNullException.ThrowIfNull(dbContext);
 			ArgumentNullException.ThrowIfNull(mediator);
-			_context = dbContext;
+
 			_mediator = mediator;
 		}
 
 		[HttpGet]
 		[Route("getWallets")]
 		[Authorize(Roles = "User,Admin")]
-		public async Task<List<WalletDto>> GetWallets()
+		public async Task<IEnumerable<WalletDto>> GetWallets()
 		{
 			var query = new GetWalletsQuery();
 
 			var wallets = await _mediator.Send(query);
 
-			var dtos = new List<WalletDto>();
-
-			foreach (var wallet in wallets)
-			{
-				var dto = new WalletDto()
-				{
-					OwnerId = wallet.OwnerId.ToString(),
-					Id = wallet.Id.ToString(),
-					Currency = wallet.Currency.CurrencyCode,
-					Type = wallet.Type,
-					Amount = wallet.Amount
-				};
-
-				dtos.Add(dto);
-			}
-
-			return dtos;
+			return Mapper.Map(wallets);
 		}
 
 		[HttpGet]
 		[Route("getWalletsForUser")]
 		[Authorize]
-		public async Task<List<WalletDto>> GetWalletsForUser()
+		public async Task<IEnumerable<WalletDto>> GetWalletsForUser()
 		{
 			var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserIdClaimName)?.Value;
 
@@ -72,22 +55,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 			var wallets = await _mediator.Send(query);
 
-			var dtos = new List<WalletDto>();
-
-			foreach (var wallet in wallets)
-			{
-				var dto = new WalletDto()
-				{
-					Id = wallet.Id.ToString(),
-					Currency = wallet.Currency.CurrencyCode,
-					Type = wallet.Type,
-					Amount = wallet.Amount
-				};
-
-				dtos.Add(dto);
-			}
-
-			return dtos;
+			return Mapper.Map(wallets);
 		}
 
 		[HttpGet("{id}")]
@@ -100,29 +68,23 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 			var wallet = await _mediator.Send(query);
 
-			var dto = new WalletDto()
-			{
-				Amount = wallet.Amount,
-				Currency = wallet.Currency.CurrencyCode,
-				Type = wallet.Type,
-				Id = wallet.Id.ToString()
-			};
-
-			return dto;
+			return Mapper.Map(wallet);
 		}
 
 		[HttpPost]
 		[Authorize(Roles = "User,Admin")]
-		public async Task<IActionResult> CreateWallet([FromBody] CreateWalletDTO createWalletDto)
+		public async Task<IActionResult> CreateWallet([FromBody] CreateWalletDto createWalletDto)
 		{
 			var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserIdClaimName)?.Value;
 
 			var command = new CreateWalletCommand()
 			{
 				OwnerId = userIdClaim,
-				Type = createWalletDto.Type,
+				WalletName = createWalletDto.WalletName,
+				WalletTypeName = createWalletDto.WalletTypeName,
 				Amount = createWalletDto.Amount,
 				CurrencyCode = createWalletDto.CurrencyCode,
+				IsMain = createWalletDto.IsMain,
 			};
 
 			var result = await _mediator.Send(command);
@@ -137,6 +99,21 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 			{
 				Id = id
 			};
+			var result = await _mediator.Send(command);
+
+			return result.IsSuccessful ? Ok(result) : BadRequest(result.Error);
+		}
+
+		[HttpPost]
+		[Route("updateWalletIsFavorite")]
+		public async Task<IActionResult> UpdateWalletIsFavorite([FromBody] UpdateWalletIsFavoriteDto updateWalletIsFavoriteDto)
+		{
+			var command = new UpdateWalletIsFavoriteCommand()
+			{
+				Id = updateWalletIsFavoriteDto.Id,
+				IsFavorite = updateWalletIsFavoriteDto.IsFavorite
+			};
+
 			var result = await _mediator.Send(command);
 
 			return result.IsSuccessful ? Ok(result) : BadRequest(result.Error);

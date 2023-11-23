@@ -1,0 +1,54 @@
+﻿@page "/update-wallet-type/{walletTypeId}"
+@using Endava.TechCourse.BankApp.Shared
+@using System.Net
+
+@layout PanelLayout
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<MudForm Model="@_newWalletType">
+	<MudTextField Label="Wallet Type Name" @bind-Value="_newWalletType.Name" />
+	<MudNumericField Label="Commission in %" @bind-Value="_newWalletType.Commission" />
+
+	<MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Submit" Class="mt-7" OnClick="UpdateWalletTypeFunc">Update new wallet type</MudButton>
+</MudForm>
+
+@code {
+	private UpdateWalletTypeByIdDto _newWalletType = new UpdateWalletTypeByIdDto();
+
+	private WalletTypeDto existingWalletTypeDto = new WalletTypeDto();
+
+	[Parameter]
+	public string WalletTypeId { get; set; }
+
+	
+	protected override async Task OnInitializedAsync()
+	{
+		var walletTypeId = NavigationManager.Uri.Split('/').Last();
+		existingWalletTypeDto = await HttpClient.GetFromJsonAsync<WalletTypeDto>($"api/walletTypeController/getWalletTypeById/{WalletTypeId}");
+
+	// Initialize _newWalletType with values from existingWalletTypeDto
+		_newWalletType = new UpdateWalletTypeByIdDto
+		{
+			Id = existingWalletTypeDto.Id,
+			Name = existingWalletTypeDto.WalletTypeName,
+			Commission = existingWalletTypeDto.Commission
+		};
+	}
+
+	private async Task UpdateWalletTypeFunc()
+	{
+		HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/walletTypeController/updateWalletType", _newWalletType);
+
+		if (response.StatusCode == HttpStatusCode.OK)
+		{
+			Snackbar.Add("Wallet type updated successfully!", Severity.Success);
+			NavigationManager.NavigateTo("/wallet-types");
+		}
+		else
+		{
+			Snackbar.Add("Something went wrong!", Severity.Error);
+		}
+	}
+}
