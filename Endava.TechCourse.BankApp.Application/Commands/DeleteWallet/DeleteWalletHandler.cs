@@ -12,6 +12,7 @@ namespace Endava.TechCourse.BankApp.Application.Commands.DeleteWallet
 		public DeleteWalletHandler(ApplicationDbContext context)
 		{
 			ArgumentNullException.ThrowIfNull(context);
+
 			_context = context;
 		}
 
@@ -19,15 +20,13 @@ namespace Endava.TechCourse.BankApp.Application.Commands.DeleteWallet
 		{
 			Wallet wallet = await _context.Wallets.FirstAsync(w => w.Id == request.Id, default);
 
-			if (wallet == null)
-			{
-				return CommandStatus.Failed("Wallet not found!");
-			}
+			if (wallet is null) return CommandStatus.Failed("Wallet not found!");
 
 			_context.Wallets.Remove(wallet);
+
 			await _context.SaveChangesAsync(cancellationToken);
 
-			return new CommandStatus();
+			return new();
 		}
 	}
 }

@@ -8,8 +8,17 @@
 @inject NavigationManager NavigationManager
 
 <MudForm Model="@_newWallet">
-	<MudTextField Label="Type" @bind-Value="_newWallet.Type" />
-	<MudNumericField Label="Amount" @bind-Value="_newWallet.Amount" />
+	<MudTextField Label="Wallet Name" @bind-Value="_newWallet.WalletName" />
+	<MudSelect Label="Type" @bind-Value="_newWallet.WalletTypeName">
+		@if (_walletTypeDtos != null)
+		{
+			foreach (var walletType in _walletTypeDtos)
+			{
+				<MudSelectItem Value="@walletType.WalletTypeName">@walletType.WalletTypeName</MudSelectItem>
+			}
+		}
+	</MudSelect>
+	<MudNumericField Label="Amount" @bind-Value="_newWallet.Amount"/>
 	<MudSelect Label="CurrencyCode" @bind-Value="_newWallet.CurrencyCode">
 		@if (_currencies != null)
 		{
@@ -19,17 +28,20 @@
 			}
 		}
 	</MudSelect>
+	<MudCheckBox @bind-Checked="@_newWallet.IsMain" Dense="false" Color="Color.Primary">Is Main</MudCheckBox>
 
 	<MudButton Variant="Variant.Filled" Color="Color.Primary" Type="ButtonType.Submit" Class="mt-7" OnClick="CreateNewWallet">Create Wallet</MudButton>
 </MudForm>
 
 @code {
-	private CreateWalletDTO _newWallet = new CreateWalletDTO();
+	private CreateWalletDto _newWallet = new CreateWalletDto();
 	private List<CurrencyDto> _currencies = new List<CurrencyDto>();
+	private List<WalletTypeDto> _walletTypeDtos = new List<WalletTypeDto>();
 
 	protected override async Task OnInitializedAsync()
 	{
 		_currencies = await HttpClient.GetFromJsonAsync<List<CurrencyDto>>($"api/currencies");
+		_walletTypeDtos = await HttpClient.GetFromJsonAsync<List<WalletTypeDto>>($"api/walletTypeController/getAllWalletTypes");
 	}
 
 	private async Task CreateNewWallet()
@@ -44,7 +56,8 @@
 		}
 		else
 		{
-			Snackbar.Add("Something went wrong!", Severity.Error);
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Snackbar.Add(errorMessage, Severity.Error);
 		}
 	}
 }

@@ -6,26 +6,26 @@ namespace Endava.TechCourse.BankApp.Application.Commands.LoginUser
 {
 	public class LoginUserHandler : IRequestHandler<LoginUserCommand, CommandStatus>
 	{
-		private readonly UserManager<User> userManager;
-		private readonly SignInManager<User> signInManager;
+		private readonly UserManager<User> _userManager;
+		private readonly SignInManager<User> _signInManager;
 
 		public LoginUserHandler(UserManager<User> userManager, SignInManager<User> signInManager)
 		{
 			ArgumentNullException.ThrowIfNull(userManager);
 			ArgumentNullException.ThrowIfNull(signInManager);
 
-			this.userManager = userManager;
-			this.signInManager = signInManager;
+			this._userManager = userManager;
+			this._signInManager = signInManager;
 		}
 
 		public async Task<CommandStatus> Handle(LoginUserCommand request, CancellationToken cancellationToken)
 		{
-			var user = await userManager.FindByNameAsync(request.Username);
+			var user = await _userManager.FindByNameAsync(request.Username);
 
 			if (user is null)
 				return CommandStatus.Failed("Nu exista un asemenea utilizator");
 
-			var passwordStatus = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+			var passwordStatus = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
 			if (!passwordStatus.Succeeded)
 				return CommandStatus.Failed("Parola introdusa este gresita");

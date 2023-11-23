@@ -2,6 +2,7 @@
 using Endava.TechCourse.BankApp.Application.Commands.DeleteCurrency;
 using Endava.TechCourse.BankApp.Application.Queries.GetCurrencies;
 using Endava.TechCourse.BankApp.Application.Queries.GetCurrencyById;
+using Endava.TechCourse.BankApp.Server.Common;
 using Endava.TechCourse.BankApp.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +19,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		public CurrencyController(IMediator mediator)
 		{
 			ArgumentNullException.ThrowIfNull(mediator);
+
 			_mediator = mediator;
 		}
 
@@ -38,27 +40,12 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		}
 
 		[HttpGet]
-		public async Task<List<CurrencyDto>> GetCurrencies()
+		public async Task<IEnumerable<CurrencyDto>> GetCurrencies()
 		{
 			var query = new GetCurrenciesQuery();
 			var currencies = await _mediator.Send(query);
-			var dtos = new List<CurrencyDto>();
 
-			foreach (var currency in currencies)
-			{
-				var dto = new CurrencyDto()
-				{
-					CanBeRemoved = true,
-					ChangeRate = currency.ChangeRate,
-					CurrencyCode = currency.CurrencyCode,
-					Id = currency.Id.ToString(),
-					Name = currency.Name,
-				};
-
-				dtos.Add(dto);
-			}
-
-			return dtos;
+			return Mapper.Map(currencies);
 		}
 
 		[HttpGet("{id}")]
@@ -71,16 +58,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 			var currency = await _mediator.Send(query);
 
-			var dto = new CurrencyDto()
-			{
-				CanBeRemoved = true,
-				ChangeRate = currency.ChangeRate,
-				CurrencyCode = currency.CurrencyCode,
-				Id = currency.Id.ToString(),
-				Name = currency.Name
-			};
-
-			return dto;
+			return Mapper.Map(currency);
 		}
 
 		[HttpDelete("{id}")]

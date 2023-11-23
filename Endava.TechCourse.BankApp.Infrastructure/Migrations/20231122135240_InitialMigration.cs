@@ -69,6 +69,19 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WalletTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    WalletTypeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Commission = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WalletTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -180,6 +193,10 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SenderUsername = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SenderEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WalletCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReceiverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SenderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SenderWalletId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReceiverUsername = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReceiverWalletId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -208,9 +225,13 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WalletName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    WalletCode = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CurrencyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CurrencyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsMain = table.Column<bool>(type: "bit", nullable: false),
+                    IsFavorite = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -221,6 +242,11 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                         principalTable: "Currencies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Wallets_WalletTypes_TypeId",
+                        column: x => x.TypeId,
+                        principalTable: "WalletTypes",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -228,8 +254,8 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("dbbf4241-5dbd-4dbc-bfc4-5741fd52bf90"), null, "Admin", "Admin" },
-                    { new Guid("e5484111-d12c-4080-a37e-2f5d5ffce724"), null, "User", "User" }
+                    { new Guid("16c4dd1e-efa6-4177-b8d5-28a91cb7f1f4"), null, "Admin", "Admin" },
+                    { new Guid("7c0531a1-2cee-4c3e-93cf-161ef2c675ab"), null, "User", "User" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -285,6 +311,18 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
                 name: "IX_Wallets_CurrencyId",
                 table: "Wallets",
                 column: "CurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Wallets_TypeId",
+                table: "Wallets",
+                column: "TypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Wallets_WalletCode",
+                table: "Wallets",
+                column: "WalletCode",
+                unique: true,
+                filter: "[WalletCode] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -319,6 +357,9 @@ namespace Endava.TechCourse.BankApp.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Currencies");
+
+            migrationBuilder.DropTable(
+                name: "WalletTypes");
         }
     }
 }

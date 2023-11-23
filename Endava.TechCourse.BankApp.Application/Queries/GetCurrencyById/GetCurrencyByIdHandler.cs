@@ -11,6 +11,7 @@ namespace Endava.TechCourse.BankApp.Application.Queries.GetCurrencyById
 		public GetCurrencyByIdHandler(ApplicationDbContext context)
 		{
 			ArgumentNullException.ThrowIfNull(context);
+
 			_context = context;
 		}
 

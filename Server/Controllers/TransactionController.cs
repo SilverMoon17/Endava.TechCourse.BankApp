@@ -1,4 +1,6 @@
-﻿using Endava.TechCourse.BankApp.Application.Commands.TransferFounds;
+﻿using Endava.TechCourse.BankApp.Application.Commands;
+using Endava.TechCourse.BankApp.Application.Commands.TransferFounds;
+using Endava.TechCourse.BankApp.Application.Commands.TransferFundsByEmail;
 using Endava.TechCourse.BankApp.Application.Queries.GetAllReceivedTransfers;
 using Endava.TechCourse.BankApp.Infrastructure.Persistence;
 using Endava.TechCourse.BankApp.Server.Common;
@@ -18,21 +20,36 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		public TransactionController(ApplicationDbContext dbContext, IMediator mediator)
 		{
 			ArgumentNullException.ThrowIfNull(mediator);
+
 			_mediator = mediator;
 		}
 
 		[HttpPost]
 		[Authorize]
-		public async Task<IActionResult> TransferFunds([FromBody] TransactionDto dto)
+		public async Task<IActionResult> TransferFunds([FromBody] SendTransactionDto dto)
 		{
-			var command = new TransferFoundsCommand()
+			var result = new CommandStatus() { IsSuccessful = false };
+			if (dto.WalletCode != String.Empty)
 			{
-				Amount = dto.Amount,
-				ReceiverUsername = dto.ReceiverUsername,
-				SenderWalletId = dto.SenderWalletId,
-			};
+				var command = new TransferFundsByWalletCodeCommand()
+				{
+					Amount = dto.Amount,
+					WalletCode = dto.WalletCode,
+					SenderWalletId = dto.SenderWalletId,
+				};
+				result = await _mediator.Send(command);
+			}
+			else if (dto.ReceiverEmail != String.Empty)
+			{
+				var command = new TransferFundsByEmailCommand()
+				{
+					Amount = dto.Amount,
+					Email = dto.ReceiverEmail,
+					SenderWalletId = dto.SenderWalletId,
+				};
 
-			var result = await _mediator.Send(command);
+				result = await _mediator.Send(command);
+			}
 
 			return result.IsSuccessful ? Ok(result) : BadRequest(result.Error);
 		}
@@ -40,7 +57,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 		[HttpGet]
 		[Authorize]
 		[Route("allReceivedTransactions")]
-		public async Task<List<TransactionDto>> GetAllReceivedTransfers()
+		public async Task<IEnumerable<TransactionDto>> GetAllReceivedTransfers()
 		{
 			var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserIdClaimName)?.Value;
 
@@ -54,31 +71,13 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 			var transactions = await _mediator.Send(query);
 
-			var dtos = new List<TransactionDto>();
-
-			foreach (var transaction in transactions)
-			{
-				var dto = new TransactionDto()
-				{
-					SenderWalletId = transaction.SenderWalletId.ToString(),
-					ReceiverUsername = transaction.ReceiverUsername,
-					Amount = transaction.AmountInReceiverCurrency,
-					SenderUsername = transaction.SenderUsername,
-					ReceiverCurrencyCode = transaction.ReceiverCurrency.CurrencyCode,
-					SenderCurrencyCode = transaction.SenderCurrency.CurrencyCode,
-					Id = transaction.Id.ToString(),
-				};
-
-				dtos.Add(dto);
-			}
-
-			return dtos;
+			return Mapper.Map(transactions);
 		}
 
 		[HttpGet]
 		[Authorize]
 		[Route("allSendTransactions")]
-		public async Task<List<TransactionDto>> GetAllSendTransfers()
+		public async Task<IEnumerable<TransactionDto>> GetAllSendTransfers()
 		{
 			var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == Constants.UserIdClaimName)?.Value;
 
@@ -92,25 +91,7 @@ namespace Endava.TechCourse.BankApp.Server.Controllers
 
 			var transactions = await _mediator.Send(query);
 
-			var dtos = new List<TransactionDto>();
-
-			foreach (var transaction in transactions)
-			{
-				var dto = new TransactionDto()
-				{
-					SenderWalletId = transaction.SenderWalletId.ToString(),
-					ReceiverUsername = transaction.ReceiverUsername,
-					Amount = transaction.AmountInReceiverCurrency,
-					SenderUsername = transaction.SenderUsername,
-					ReceiverCurrencyCode = transaction.ReceiverCurrency.CurrencyCode,
-					SenderCurrencyCode = transaction.SenderCurrency.CurrencyCode,
-					Id = transaction.Id.ToString(),
-				};
-
-				dtos.Add(dto);
-			}
-
-			return dtos;
+			return Mapper.Map(transactions);
 		}
 	}
 }

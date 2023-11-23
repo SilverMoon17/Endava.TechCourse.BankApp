@@ -12,6 +12,7 @@ namespace Endava.TechCourse.BankApp.Application.Commands.DeleteCurrency
 		public DeleteCurrencyHandler(ApplicationDbContext context)
 		{
 			ArgumentNullException.ThrowIfNull(context);
+
 			_context = context;
 		}
 
@@ -19,15 +20,14 @@ namespace Endava.TechCourse.BankApp.Application.Commands.DeleteCurrency
 		{
 			Currency currency = await _context.Currencies.FirstAsync(c => c.Id == request.Id, default);
 
-			if (currency == null)
-			{
+			if (currency is null)
 				return CommandStatus.Failed("Currency not found!");
-			}
 
 			_context.Currencies.Remove(currency);
+
 			await _context.SaveChangesAsync(cancellationToken);
 
-			return new CommandStatus();
+			return new();
 		}
 	}
 }

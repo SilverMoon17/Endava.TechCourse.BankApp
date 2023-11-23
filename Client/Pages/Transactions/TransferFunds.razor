@@ -10,12 +10,13 @@
 		{
 			foreach (var wallet in _userWallets)
 			{
-				<MudSelectItem Value="@wallet.Id">@wallet.Type</MudSelectItem>
+				<MudSelectItem Value="@wallet.Id">@wallet.WalletName</MudSelectItem>
 			}
 		}
 	</MudSelect>
 
-	<MudTextField Label="Receiver Username" @bind-Value="_transferFundsModel.ReceiverUsername" />
+	<MudTextField Label="Receiver Email" @bind-Value="_transferFundsModel.ReceiverEmail" />
+	<MudTextField Label="Wallet Code" @bind-Value="_transferFundsModel.WalletCode" />
 
 	<MudNumericField Label="Amount" @bind-Value="_transferFundsModel.Amount" />
 
@@ -50,7 +51,8 @@
 	public class TransferFundsModel
 	{
 		public decimal Amount { get; set; }
-		public string ReceiverUsername { get; set; }
+		public string ReceiverEmail { get; set; }
+		public string WalletCode { get; set; }
 		public string SenderWalletId { get; set; }
 	}
 }

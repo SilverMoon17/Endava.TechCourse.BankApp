@@ -12,21 +12,14 @@ namespace Endava.TechCourse.BankApp.Application.Queries.GetAllReceivedTransfers
 		public GetAllReceivedTransfersHandler(ApplicationDbContext context)
 		{
 			ArgumentNullException.ThrowIfNull(context);
+
 			_context = context;
 		}
 
 		public async Task<List<Transaction>> Handle(GetAllReceivedTransfersQuery request, CancellationToken cancellationToken)
 		{
-			var receiverWallet =
-				await _context.Wallets.FirstOrDefaultAsync(w => w.OwnerId.ToString() == request.ReceiverId,
-					cancellationToken);
-			if (receiverWallet == null)
-			{
-				throw new ArgumentNullException();
-			}
-
 			var transactions = await _context.Transactions
-				.Where(t => t.ReceiverWalletId == receiverWallet.Id)
+				.Where(t => t.ReceiverId.ToString() == request.ReceiverId)
 				.Include(t => t.ReceiverCurrency)
 				.Include(t => t.SenderCurrency)
 				.ToListAsync(cancellationToken);

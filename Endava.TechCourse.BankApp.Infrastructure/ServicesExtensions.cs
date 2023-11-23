@@ -1,5 +1,6 @@
 ﻿using Endava.TechCourse.BankApp.Domain.Models;
 using Endava.TechCourse.BankApp.Infrastructure.Persistence;
+using Endava.TechCourse.BankApp.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,8 @@ public static class ServicesExtensions
 			.AddRoleManager<RoleManager<IdentityRole<Guid>>>()
 			.AddSignInManager<SignInManager<User>>()
 			.AddDefaultTokenProviders();
+
+		services.AddScoped<WalletCodeGenerator>();
 
 		services.Configure<IdentityOptions>(options =>
 		{

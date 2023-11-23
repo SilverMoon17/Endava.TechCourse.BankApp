@@ -1,0 +1,46 @@
+﻿<h3>Wallet</h3>
+@page "/wallet-types"
+@layout PanelLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>All wallets</PageTitle>
+
+
+<br />
+<br />
+
+<MudTable Items="@walletTypeDtos">
+	<HeaderContent>
+		<MudTh>Wallet Type Name</MudTh>
+		<MudTh>Commission</MudTh>
+	</HeaderContent>
+	<RowTemplate>
+		<MudTd>@context.WalletTypeName</MudTd>
+		<MudTd>@context.Commission</MudTd>
+		<MudTd><MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Create" Color="Color.Success" OnClick="@(() => NavigateToUpdatePage(context.Id))">
+			Update
+		</MudButton></MudTd>
+	</RowTemplate>
+</MudTable>
+<MudGrid Justify="Justify.FlexEnd" Class="mt-10">
+	<MudItem>
+		<MudLink Href="/create-wallet-type"><MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Create" Color="Color.Success">Add new wallet type</MudButton></MudLink>
+	</MudItem>
+</MudGrid>
+@code {
+	private List<WalletTypeDto> walletTypeDtos;
+
+	private string newCurrencyError = string.Empty;
+	private string deleteCurrencyError = string.Empty;
+
+	void NavigateToUpdatePage(string walletTypeId)
+	{
+		NavigationManager.NavigateTo($"/update-wallet-type/{walletTypeId}");
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		walletTypeDtos = await HttpClient.GetFromJsonAsync<List<WalletTypeDto>>($"api/walletTypeController/getAllWalletTypes");
+	}
+}

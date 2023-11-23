@@ -1,6 +1,9 @@
 ﻿<h3>Wallet</h3>
 @page "/wallets"
+@using System.Net
+@using System.ComponentModel.Design.Serialization
 @layout PanelLayout
+@inject ISnackbar Snackbar
 @inject HttpClient HttpClient
  
 <PageTitle>All wallets</PageTitle>
@@ -11,19 +14,39 @@
  
 <MudTable Items="@wallets">
 	<HeaderContent>
+		<MudTh>Main</MudTh>
 		<MudTh>Type</MudTh>
+		<MudTh>Wallet Name</MudTh>
+		<MudTh>Wallet Code</MudTh>
 		<MudTh>Amount</MudTh>
 		<MudTh>Currency</MudTh>
 		<MudTh>Info</MudTh>
 	</HeaderContent>
 	<RowTemplate>
-		<MudTd>@context.Type</MudTd>
+		<MudTd>
+			@if (@context.IsMain)
+			{
+				<MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Info" Size="Size.Medium" />
+			} else {
+				<MudIcon Icon="@Icons.Material.Outlined.StarBorder" Color="Color.Info" Size="Size.Medium" />
+			}
+		</MudTd>
+		<MudTd>@context.WalletTypeName</MudTd>
+		<MudTd>@context.WalletName</MudTd>
+		<MudTd>@context.WalletCode</MudTd>
 		<MudTd>@context.Amount</MudTd>
 		<MudTd>@context.Currency</MudTd>
 		<MudTd DataLabel="Info">
 			<MudLink Href="@($"/wallet/{@context.Id}")">View info</MudLink>
 		</MudTd>
-		<MudTd DataLabel="Nr">
+		<MudTd DataLabel="Favorite">
+			<MudCheckBox @bind-Checked="@context.IsFavorite"
+			             Color="Color.Warning"
+			             CheckedIcon="@Icons.Material.Filled.Star"
+						 UncheckedIcon="@Icons.Material.Filled.StarOutline" @onclick="async (e) => { await UpdateWalletIsFavorite(context.Id, !context.IsFavorite); }">
+			</MudCheckBox>
+		</MudTd>
+		<MudTd DataLabel="Delete">
 			<MudButton Color="Color.Error" OnClick="@((e) => DeleteWallet(context.Id))">Sterge</MudButton>
 		</MudTd>
 	</RowTemplate>
@@ -36,12 +59,30 @@
 @code {
 	private List<WalletDto> wallets;
 
-	private string newCurrencyError = string.Empty;
-	private string deleteCurrencyError = string.Empty;
- 
+	private UpdateWalletIsFavoriteDto updateWalletIsFavoriteDto = new UpdateWalletIsFavoriteDto();
+
 	protected override async Task OnInitializedAsync()
 	{
 		wallets = await HttpClient.GetFromJsonAsync<List<WalletDto>>($"api/wallet/getWalletsForUser");
+	}
+
+	public async Task UpdateWalletIsFavorite(string id, bool isFavorite)
+	{
+		updateWalletIsFavoriteDto.Id = id;
+		updateWalletIsFavoriteDto.IsFavorite = isFavorite;
+		HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/wallet/updateWalletIsFavorite", updateWalletIsFavoriteDto);
+
+		if (response.StatusCode == HttpStatusCode.OK)
+		{
+			Snackbar.Add("Wallet updated successfully!", Severity.Success);
+		}
+		else
+		{
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			Snackbar.Add(errorMessage, Severity.Error);
+		}
+
+		StateHasChanged();
 	}
 
 	public async Task DeleteWallet(string id)
